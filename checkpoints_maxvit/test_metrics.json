@@ -1,0 +1,92 @@
+{
+  "model": "MaxViT-Base (timm maxvit_base_tf_224.in1k), 118.7M parameters",
+  "training_data": "RSNA ICH dataset \u2014 544,685 training images, 6-class multi-label",
+  "checkpoint": "./checkpoints_maxvit/best_maxvit_ich.pth",
+  "epoch": 18,
+  "val_auc": 0.987736496492217,
+  "n_test": 200000,
+  "mean_auc": 0.986447,
+  "kaggle_wll": 0.087119,
+  "inference_seconds": 1257.1,
+  "slices_per_second": 159.1,
+  "per_class": {
+    "epidural": {
+      "auc": 0.988609,
+      "prevalence": 0.004225,
+      "sensitivity": 0.956213,
+      "specificity": 0.949492,
+      "ppv": 0.074354,
+      "npv": 0.999804,
+      "lr_positive": 18.9318,
+      "lr_negative": 0.046116,
+      "threshold": 0.09668,
+      "n_positive": 845,
+      "n_total": 200000
+    },
+    "intraparenchymal": {
+      "auc": 0.9886,
+      "prevalence": 0.0485,
+      "sensitivity": 0.949485,
+      "specificity": 0.953011,
+      "ppv": 0.507382,
+      "npv": 0.997305,
+      "lr_positive": 20.2065,
+      "lr_negative": 0.053006,
+      "threshold": 0.271484,
+      "n_positive": 9700,
+      "n_total": 200000
+    },
+    "intraventricular": {
+      "auc": 0.99326,
+      "prevalence": 0.035195,
+      "sensitivity": 0.961926,
+      "specificity": 0.967605,
+      "ppv": 0.519966,
+      "npv": 0.998567,
+      "lr_positive": 29.6935,
+      "lr_negative": 0.039348,
+      "threshold": 0.25,
+      "n_positive": 7039,
+      "n_total": 200000
+    },
+    "subarachnoid": {
+      "auc": 0.978587,
+      "prevalence": 0.04791,
+      "sensitivity": 0.919432,
+      "specificity": 0.930574,
+      "ppv": 0.399909,
+      "npv": 0.995662,
+      "lr_positive": 13.2433,
+      "lr_negative": 0.086579,
+      "threshold": 0.306641,
+      "n_positive": 9582,
+      "n_total": 200000
+    },
+    "subdural": {
+      "auc": 0.984015,
+      "prevalence": 0.06334,
+      "sensitivity": 0.932507,
+      "specificity": 0.947628,
+      "ppv": 0.546291,
+      "npv": 0.995207,
+      "lr_positive": 17.8054,
+      "lr_negative": 0.071223,
+      "threshold": 0.416016,
+      "n_positive": 12668,
+      "n_total": 200000
+    },
+    "any": {
+      "auc": 0.985613,
+      "prevalence": 0.144945,
+      "sensitivity": 0.940012,
+      "specificity": 0.945273,
+      "ppv": 0.744352,
+      "npv": 0.989357,
+      "lr_positive": 17.1762,
+      "lr_negative": 0.063461,
+      "threshold": 0.345703,
+      "n_positive": 28989,
+      "n_total": 200000
+    }
+  }
+}

@@ -1,0 +1,30 @@
+# ICH AI Detection Pipeline — Python dependencies
+#
+# Install with:
+#   pip install -r requirements.txt
+#
+# A CUDA-capable GPU is strongly recommended for inference and training.
+# CPU-only inference is possible but significantly slower.
+
+# ── Deep learning ─────────────────────────────────────────────────────────────
+torch>=2.1.0
+torchvision>=0.16.0
+timm>=0.9.12          # MaxViT model (maxvit_base_tf_224.in1k)
+
+# ── Data / numerics ───────────────────────────────────────────────────────────
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0   # AUC, confusion matrix, Youden J threshold
+scipy>=1.11.0
+
+# ── DICOM ─────────────────────────────────────────────────────────────────────
+pydicom>=2.4.0
+
+# ── Worklist server and image serving ────────────────────────────────────────
+flask>=3.0.0
+pillow>=10.0.0        # PNG encoding, HU overlay compositing
+
+# ── Agentic pipeline (optional — only needed for run_demo_agent.py) ──────────
+# anthropic>=0.25.0
+# Requires ANTHROPIC_API_KEY environment variable.
+# See README: Agentic Mode — Anthropic API

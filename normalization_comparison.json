@@ -1,0 +1,52 @@
+{
+  "n_slices_used": 1000,
+  "n_slices_skipped": 0,
+  "tissue_ranges": {
+    "gray_matter_hu": [
+      28.0,
+      42.0
+    ],
+    "acute_blood_hu": [
+      50.0,
+      80.0
+    ]
+  },
+  "schemes": {
+    "Per-image (min/max)": {
+      "gm_mean": 0.6953889727592468,
+      "gm_std": 0.02236330509185791,
+      "gm_median": 0.69580078125,
+      "blood_mean": 0.7521557211875916,
+      "blood_std": 0.021704992279410362,
+      "blood_median": 0.75,
+      "delta_mean": 0.05676674842834473,
+      "overlap_index": 0.0,
+      "n_gm_pixels": 28337062,
+      "n_blood_pixels": 5565700
+    },
+    "Fixed medium (\u2212200 to 200 HU)": {
+      "gm_mean": 0.5855198502540588,
+      "gm_std": 0.009340004064142704,
+      "gm_median": 0.5849609375,
+      "blood_mean": 0.6531296968460083,
+      "blood_std": 0.01998436637222767,
+      "blood_median": 0.64990234375,
+      "delta_mean": 0.06760984659194946,
+      "overlap_index": 0.0,
+      "n_gm_pixels": 28337062,
+      "n_blood_pixels": 5565700
+    },
+    "Fixed narrow (48 to 90 HU)": {
+      "gm_mean": 0.0,
+      "gm_std": 0.0,
+      "gm_median": 0.0,
+      "blood_mean": 0.3156556785106659,
+      "blood_std": 0.19033506512641907,
+      "blood_median": 0.28564453125,
+      "delta_mean": 0.3156556785106659,
+      "overlap_index": 0.0,
+      "n_gm_pixels": 28337062,
+      "n_blood_pixels": 5565700
+    }
+  }
+}
