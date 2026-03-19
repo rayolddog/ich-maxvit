@@ -86,7 +86,7 @@ pip install huggingface_hub
 python - <<'EOF'
 from huggingface_hub import hf_hub_download
 hf_hub_download(
-    repo_id  = "rayolddog/ich-maxvit",
+    repo_id  = "brodown3/ich-maxvit",
     filename = "best_maxvit_ich.pth",
     local_dir = "./checkpoints_maxvit",
 )
