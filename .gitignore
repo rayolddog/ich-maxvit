@@ -38,8 +38,9 @@ narrow_hu_v2_sah.png
 pseudocolor_detail_sah.png
 
 # ── Earlier SE-ResNeXt50 experiment (superseded by MaxViT) ───────────────────
+# Note: dataset_1ch.py is retained — it provides LABEL_COLS and label
+# utilities shared by dataset_maxvit.py, train_maxvit.py, ich_inference.py
 model_1ch.py
-dataset_1ch.py
 train_1ch.py
 evaluate_test_set.py
 build_narrow_cache.py
