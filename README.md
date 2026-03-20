@@ -67,65 +67,102 @@ All five subtypes are detected independently:
 
 ## Demo
 
-### Requirements
+### Quick start
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/rayolddog/ich-maxvit.git
+cd ich-maxvit
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Download the trained checkpoint (1.4 GB, one time only)
+python download_checkpoint.py
+
+# 4. Run the pipeline — processes all 10 demo studies (~16 s on GPU)
+python run_demo_direct.py
+
+# 5. Start the worklist server
+python ich_worklist.py
+# Open http://localhost:5050 in a browser
+```
+
+A CUDA GPU is recommended for step 4.  Apple Silicon (MPS) and CPU are
+supported — CPU inference takes a few minutes rather than seconds.
+
+---
+
+### Step-by-step details
+
+#### 1 — Install dependencies
+
+All required packages are listed in `requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-A GPU is strongly recommended.  CPU inference is possible but slow (~20 s/slice
-vs. ~0.06 s/slice on an NVIDIA GPU).
+A virtual environment is recommended:
 
-### Download the trained checkpoint
+```bash
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+#### 2 — Download the trained checkpoint
 
 The model checkpoint (`best_maxvit_ich.pth`, 1.4 GB) is hosted on HuggingFace
-Hub and is not included in this repository.
+Hub and is not included in this repository (too large for GitHub).
 
 ```bash
-pip install huggingface_hub
-python - <<'EOF'
-from huggingface_hub import hf_hub_download
-hf_hub_download(
-    repo_id  = "brodown3/ich-maxvit",
-    filename = "best_maxvit_ich.pth",
-    local_dir = "./checkpoints_maxvit",
-)
-print("Checkpoint saved to ./checkpoints_maxvit/best_maxvit_ich.pth")
-EOF
+python download_checkpoint.py
 ```
 
-### Build demo studies
+This saves the file to `checkpoints_maxvit/best_maxvit_ich.pth`.  Run once
+after cloning; it is not needed again unless the folder is deleted.
 
-Ten real anonymised CT studies are reconstructed from the RSNA ICH training
-dataset (five positive — one of each subtype — plus five negative).  You must
-have the RSNA dataset downloaded locally.
+#### 3 — Demo studies
+
+Ten anonymised CT head studies are included in `demo_studies/` (five positive
+— one of each hemorrhage subtype — plus five negative controls).
+
+> **Note:** `demo_studies/` is currently excluded pending permission from the
+> RSNA Educational Division to redistribute the anonymised DICOM subset.
+> If the folder is absent, rebuild it from the full RSNA dataset:
+>
+> ```bash
+> python build_demo_studies.py \
+>     --dicom-dir /path/to/rsna/stage_2_train \
+>     --labels-csv /path/to/stage_2_train.csv \
+>     --out demo_studies
+> ```
+
+#### 4 — Run the pipeline
 
 ```bash
-python build_demo_studies.py \
-    --dicom-dir /path/to/rsna/stage_2_train \
-    --labels-csv /path/to/stage_2_train.csv \
-    --out demo_studies
-```
-
-### Run the pipeline — no API key required
-
-```bash
-# Processes all 10 studies via direct tool calls.
-# Generates DICOM SRs, populates the worklist, ~16 s on GPU.
 python run_demo_direct.py
 ```
 
-### Start the worklist server
+Processes all 10 studies without an API key.  For each study: reads DICOM
+headers, selects the axial noncontrast series, runs MaxViT inference,
+generates a DICOM SR, and populates the worklist.  Takes ~16 seconds on GPU.
+
+#### 5 — Start the worklist server
 
 ```bash
 python ich_worklist.py
 # Open http://localhost:5050 in a browser
-# Click a patient name to open the CT viewer
 ```
 
-The viewer shows the highest-activation CT slice on the left and the full
-DICOM SR content (impression, probability bars, metrics cards, report
-paragraph) on the right.  Arrow keys navigate between hot slices.
+The worklist lists all studies with AI-positive cases flagged at the top.
+Click any patient name to open the CT viewer.  The viewer shows the
+highest-scoring CT slice, per-subtype probability bars, Bayesian performance
+metrics, and a formatted report paragraph ready to paste into dictation
+software (PowerScribe or equivalent).  Use the arrow keys to step through
+hot slices.  Toggle **HU Overlay** to highlight tissue in the 48–90 HU
+acute hemorrhage density range.
 
 ### Run the pipeline — with Anthropic API key (optional)
 
