@@ -237,6 +237,14 @@ acute intracranial hemorrhage (48–90 HU).  This overlay is computed directly
 from the raw DICOM pixel data — it is entirely independent of the AI model and
 represents a physics-based measurement rather than a learned inference.
 
+### This overlay is not an AI activation map
+
+The HU overlay is computed entirely from raw DICOM pixel values using a fixed
+density threshold.  It has no connection to the neural network's internal
+representations.  It does not show where the AI detected hemorrhage, and it
+does not confirm or explain the AI result.  Its sole purpose is to direct the
+radiologist's attention to areas of unexpected high density during review.
+
 ### What the red pixels represent
 
 Acute blood has a characteristic density of approximately 50–80 HU on
@@ -244,33 +252,59 @@ noncontrast CT, arising from the protein content of haemoglobin.  The overlay
 uses the range 48–90 HU, consistent with the narrow window used during model
 training, to capture the full range of acute and hyperacute clot densities.
 
-### What else the overlay highlights
+### What the overlay will not highlight — chronic subdural hematoma
 
-Because the threshold is purely density-based, the overlay will also mark:
+Chronic subdural hematomas (typically ≥ 1 week old) undergo lysis and
+progressive protein breakdown.  Their density falls progressively from the
+acute range (~60–80 HU) toward isodensity with brain parenchyma (~30–40 HU)
+and eventually toward CSF density (~0–15 HU) in the chronic-liquefied stage.
+By the time a subdural is considered chronic, it is largely or entirely below
+the 48–90 HU threshold and **will not be highlighted by the overlay**.
 
-- **Partial volume averaging at the inner table of the skull** — a bright ring
-  around the brain edge where cortical bone averages with adjacent soft tissue.
-  This is the most prominent normal finding in the overlay.
+This is clinically important: if the AI flags a study as positive for subdural
+hematoma and the overlay shows no red pixels in the expected extra-axial
+location, the most likely explanation is a chronic or subacute subdural — not
+a false positive.  The AI model was trained on the full RSNA dataset which
+includes chronic subdurals; the HU overlay was not.  These are two different
+tools measuring different things.
+
+Chronic subdural hematomas, while generally less immediately life-threatening
+than acute hemorrhage, still require clinical management and should not be
+dismissed because the overlay is unremarkable.
+
+### What else the overlay highlights — expected normal findings
+
+Because the threshold is purely density-based, the overlay will also mark
+structures that are entirely normal and should be mentally subtracted:
+
+- **Partial volume averaging at the inner table of the skull** — the most
+  prominent normal finding: a bright ring around the brain edge where cortical
+  bone averages with adjacent soft tissue.
+- **Metal implants and artifact** — surgical clips, shunt hardware, and dental
+  or cervical spine metal produce streak artifacts that cross this HU range.
 - **Physiological calcifications** — choroid plexus, pineal gland, habenular
-  commissure, and basal ganglia calcifications can fall near this HU range.
-- **Beam hardening artifact** — dense structures near bone occasionally produce
-  streaks that reach this density range.
+  commissure, and basal ganglia calcifications commonly fall in this range.
+- **Beam hardening streaks** — dense bone and metal occasionally produce
+  adjacent streaks reaching this density range.
 
 ### Why it is still clinically useful
 
 An experienced radiologist immediately recognises the normal high-density
-structures listed above.  The signal of interest is **unexpected red pixels
-in the parenchyma or extra-axial space** — away from bone edges and known
-calcification sites.  The overlay provides a rapid pre-attentive cue: *is
-there material in the hemorrhage density range where there should not be?*
+structures listed above.  The signal of clinical interest is **unexpected red
+pixels in the parenchyma or extra-axial space** — away from bone edges, known
+calcification sites, and metal artifacts.
+
+The overlay provides a rapid pre-attentive cue: *is there material in the
+hemorrhage density range where there should not be?*
 
 The overlay is complementary to the AI model rather than redundant.  The model
 learned statistical patterns across hundreds of thousands of CT slices; the HU
 overlay is raw physics.  When the AI flags a slice and the overlay shows
 unexpected high-density pixels in the same region, that is two independent
 lines of evidence pointing to the same finding — which is reassuring.  When
-the AI flags a slice but the overlay shows nothing unusual at that location,
-that warrants closer scrutiny of the AI's classification.
+the AI flags a slice for acute hemorrhage but the overlay shows nothing unusual
+at that location, chronic or subacute hemorrhage should be the leading
+consideration.
 
 The overlay is not a segmentation tool and has not been validated against
 radiologist-drawn regions of interest.  It is a display aid intended to direct

@@ -724,12 +724,29 @@ HTML_TEMPLATE = """
             HU Overlay
           </button>
         </div>
-        <div id="hu-overlay-caption" style="display:none;margin-top:6px;padding:5px 10px;
+        <div id="hu-overlay-caption" style="display:none;margin-top:6px;padding:8px 12px;
              background:#311313;border-radius:4px;font-size:0.72rem;
-             color:#ef9a9a;text-align:center;line-height:1.5">
-          Red pixels: tissue density 48–90 HU — the range expected in acute
-          intracranial hemorrhage. Also highlights partial volume artifacts
-          at bone edges and physiological calcifications.
+             color:#ef9a9a;line-height:1.6">
+          <b>HU Overlay — purpose and limitations</b><br>
+          Red pixels mark tissue density 48–90 HU, the range of <i>acute</i>
+          intracranial hemorrhage. This is a physics-based display aid computed
+          directly from raw DICOM pixel values. <b>It is not an activation map
+          of the neural network</b> and does not show where the AI detected
+          hemorrhage.<br><br>
+          <b>What the overlay will not highlight:</b> Chronic subdural hematomas
+          (typically ≥ 1 week old) become isodense or hypodense relative to brain
+          and fall below this HU range. A positive AI result for chronic subdural
+          may show little or no red overlay — this is expected and does not
+          invalidate the AI finding.<br><br>
+          <b>Expected normal findings in this range:</b> partial volume averaging
+          at the inner table of the skull (bright ring at brain edge), physiological
+          calcifications (choroid plexus, pineal, basal ganglia), metal implant
+          artifacts, and beam-hardening streaks near dense bone. These are
+          normal and should be mentally subtracted.<br><br>
+          The signal of clinical interest is <b>unexpected red pixels in the
+          parenchyma or extra-axial space</b>, away from bone edges and known
+          calcification sites. The overlay is intended to focus radiologist
+          attention, not to replace it.
         </div>
         <div class="demo-note" id="viewer-demo-note"></div>
       </div>
