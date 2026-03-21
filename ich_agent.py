@@ -143,8 +143,8 @@ def _flag_worklist(
 
 # ── Tool registry ────────────────────────────────────────────────────────────
 
-CHECKPOINT_PATH = (
-    "/home/justinolddog/NewICH/checkpoints_maxvit/best_maxvit_ich.pth"
+CHECKPOINT_PATH = str(
+    Path(__file__).parent / "checkpoints_maxvit" / "best_maxvit_ich.pth"
 )
 
 TOOL_IMPLEMENTATIONS = {
