@@ -347,6 +347,50 @@ The overlay is not a segmentation tool and has not been validated against
 radiologist-drawn regions of interest.  It is a display aid intended to direct
 attention, not to replace clinical judgment.
 
+### Where the overlay is most and least useful
+
+The HU overlay is most informative for **subarachnoid, intraparenchymal, and
+intraventricular hemorrhage**, where acute blood appears in locations that are
+clearly distinct from the normal high-density structures described above.
+Unexpected red pixels in the sulci, within the parenchyma, or lining the
+ventricular walls are immediately recognisable as abnormal.
+
+The overlay is least reliable for **extracerebral hematomas** (subdural and
+epidural), for reasons beyond the chronic subdural density shift already
+discussed.  Partial volume averaging at the inner table of the skull produces
+a red rim that can mask or mimic an adjacent thin extracerebral collection.
+An important exception: in some cases of chronic or subacute subdural
+hematoma, the edges of the collection may still be highlighted even when the
+bulk of the fluid is isodense.  This occurs because the interface between the
+displaced inner cortical surface of the brain and the overlying hyperdense
+membrane — a thin split visible between the skull edge and the inwardly
+displaced brain margin — may fall within the 48–90 HU range.  Whether this
+edge effect is visible depends heavily on the reconstruction algorithm: higher
+spatial frequency (detail or bone) kernels produce overshoot at tissue
+interfaces through edge enhancement, making the split more apparent; softer
+reconstruction kernels suppress it.  This sign is therefore inconsistent and
+should not be relied upon as a primary finding.
+
+### Learning curve
+
+Just as radiologists must learn to interpret the marks placed on mammograms
+by AI-assisted breast cancer detection systems, there is a learning curve in
+using the HU overlay effectively.  The key skill is rapid mental subtraction
+of the expected normal findings — the skull rim, calcifications, and any
+artifact — to isolate the residual signal.  With experience, the overlay
+becomes a fast pre-attentive check rather than a source of uncertainty.
+
+### Future direction
+
+The current implementation uses a fixed HU threshold applied uniformly across
+the image.  This is intentionally simple — straightforward to implement,
+deterministic, and grounded in established CT physics.  More advanced
+approaches using learned segmentation models (such as a MaxViT-based
+architecture trained on radiologist-annotated regions) could provide more
+anatomically precise localisation, separating true hemorrhage from normal
+high-density structures with far greater specificity.  The HU overlay
+represents a practical first step; the path to improvement is clear.
+
 ---
 
 ## Understanding the Statistics — A Bayesian Perspective
