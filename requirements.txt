@@ -28,6 +28,6 @@ pillow>=10.0.0        # PNG encoding, HU overlay compositing
 huggingface_hub>=0.20.0   # download_checkpoint.py — fetch checkpoint from HF Hub
 
 # ── Agentic pipeline (optional — only needed for run_demo_agent.py) ──────────
-# anthropic>=0.25.0
-# Requires ANTHROPIC_API_KEY environment variable.
-# See README: Agentic Mode — Anthropic API
+anthropic>=0.25.0     # optional: only required for run_demo_agent.py
+                      # Requires ANTHROPIC_API_KEY environment variable.
+                      # See README: Agentic Mode — Anthropic API

@@ -156,6 +156,10 @@ python ich_worklist.py
 # Open http://localhost:5050 in a browser
 ```
 
+> **Browser compatibility:** Use **Firefox** or **Microsoft Edge**.
+> Google Chrome blocks connections to localhost ports on some platforms
+> and may refuse to load the page.
+
 The worklist lists all studies with AI-positive cases flagged at the top.
 Click any patient name to open the CT viewer.  The viewer shows the
 highest-scoring CT slice, per-subtype probability bars, Bayesian performance

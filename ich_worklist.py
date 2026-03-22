@@ -444,11 +444,19 @@ HTML_TEMPLATE = """
       flex: 0 0 52%; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       background: #000; border-right: 1px solid #1e3a5f; padding: 12px;
+      position: relative;
     }
     .viewer-img-wrap { position: relative; }
     .viewer-img-wrap img {
       display: block; max-width: 100%; max-height: calc(92vh - 160px);
       border: 1px solid #263238;
+    }
+    #hu-overlay-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      max-height: 45%; overflow-y: auto;
+      background: rgba(30,8,8,0.96); border-top: 1px solid #7f1010;
+      padding: 10px 14px; font-size: 0.71rem;
+      color: #ef9a9a; line-height: 1.6; z-index: 10;
     }
     .slice-nav {
       display: flex; align-items: center; gap: 16px; margin-top: 10px;
@@ -724,9 +732,7 @@ HTML_TEMPLATE = """
             HU Overlay
           </button>
         </div>
-        <div id="hu-overlay-caption" style="display:none;margin-top:6px;padding:8px 12px;
-             background:#311313;border-radius:4px;font-size:0.72rem;
-             color:#ef9a9a;line-height:1.6">
+        <div id="hu-overlay-caption" style="display:none">
           <b>HU Overlay — purpose and limitations</b><br>
           Red pixels mark tissue density 48–90 HU, the range of <i>acute</i>
           intracranial hemorrhage. This is a physics-based display aid computed
