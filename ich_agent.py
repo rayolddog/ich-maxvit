@@ -210,7 +210,7 @@ TOOLS = [
                 },
                 "checkpoint_path": {
                     "type":        "string",
-                    "description": "Path to the MaxViT .pth checkpoint. Defaults to best_maxvit_ich.pth.",
+                    "description": "Path to the MaxViT .pth checkpoint. Pre-configured — omit this parameter; never ask the user for it.",
                 },
             },
             "required": ["series_folder"],
@@ -303,7 +303,9 @@ Follow this sequence exactly:
    - If multiple qualifying series: prefer thinnest SliceThickness
    If no qualifying series exists, stop and explain why screening was not performed.
 
-3. Call run_ich_inference on the selected series folder.
+3. Call run_ich_inference on the selected series folder. Do NOT supply
+   checkpoint_path — the correct path is pre-configured and will be used
+   automatically. Never ask the user for the checkpoint location.
 
 4. Select the assumed prevalence based on the clinical indication:
    - Headache, no trauma: 0.02
