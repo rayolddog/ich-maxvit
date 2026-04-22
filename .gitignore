@@ -9,10 +9,11 @@ __pycache__/
 hu_tensor/zig-out/
 hu_tensor/.zig-cache/
 
-# ── DICOM and tensor data — never commit ─────────────────────────────────────
-*.dcm
+# ── DICOM and tensor data — never commit (except demo studies) ───────────────
 *.npz
 *.csv
+*.dcm
+!demo_studies/**/*.dcm
 
 # ── Model checkpoints — too large for GitHub ─────────────────────────────────
 # Host on HuggingFace Hub; see README for download instructions
@@ -21,8 +22,11 @@ checkpoints_maxvit/prevalence.db
 checkpoints_1ch/
 checkpoints_narrow_1ch/
 
-# ── Demo studies — DICOM files, pending RSNA permission ──────────────────────
-demo_studies/
+# ── CQ500 zip cache — large files, do not commit ─────────────────────────────
+cq500_cache/
+
+# ── Scratch images ────────────────────────────────────────────────────────────
+segmentation_subarachnoid__ID_9fae411ae8.png
 
 # ── Runtime / generated data ─────────────────────────────────────────────────
 worklist.json

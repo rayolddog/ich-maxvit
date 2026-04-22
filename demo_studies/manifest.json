@@ -1,0 +1,107 @@
+{
+  "positive": [
+    {
+      "study_uid": "1.2.276.0.7230010.3.1.2.296485376.1.1521713441.1808778",
+      "dominant_class": "intraparenchymal",
+      "subtype_labels": {
+        "subdural": 0,
+        "epidural": 0,
+        "intraparenchymal": 1,
+        "intraventricular": 0,
+        "subarachnoid": 0,
+        "any": 1
+      },
+      "n_slices": 30,
+      "n_labelled": 30,
+      "source": "CQ500",
+      "cq500_name": "CQ500-CT-427",
+      "folder": "positive/intraparenchymal__CQ500_CT_427"
+    },
+    {
+      "study_uid": "1.2.276.0.7230010.3.1.2.296485376.1.1521713566.1845225",
+      "dominant_class": "epidural",
+      "subtype_labels": {
+        "subdural": 0,
+        "epidural": 1,
+        "intraparenchymal": 0,
+        "intraventricular": 0,
+        "subarachnoid": 1,
+        "any": 1
+      },
+      "n_slices": 30,
+      "n_labelled": 30,
+      "source": "CQ500",
+      "cq500_name": "CQ500-CT-181",
+      "folder": "positive/epidural__CQ500_CT_181"
+    },
+    {
+      "study_uid": "1.2.276.0.7230010.3.1.2.296485376.1.1521713552.1841190",
+      "dominant_class": "intraventricular",
+      "subtype_labels": {
+        "subdural": 0,
+        "epidural": 0,
+        "intraparenchymal": 1,
+        "intraventricular": 1,
+        "subarachnoid": 0,
+        "any": 1
+      },
+      "n_slices": 30,
+      "n_labelled": 30,
+      "source": "CQ500",
+      "cq500_name": "CQ500-CT-80",
+      "folder": "positive/intraventricular__CQ500_CT_80"
+    },
+    {
+      "study_uid": "1.2.276.0.7230010.3.1.2.296485376.1.1521713624.1862675",
+      "dominant_class": "subdural",
+      "subtype_labels": {
+        "subdural": 1,
+        "epidural": 0,
+        "intraparenchymal": 0,
+        "intraventricular": 0,
+        "subarachnoid": 0,
+        "any": 1
+      },
+      "n_slices": 30,
+      "n_labelled": 30,
+      "source": "CQ500",
+      "cq500_name": "CQ500-CT-412",
+      "folder": "positive/subdural__CQ500_CT_412"
+    },
+    {
+      "study_uid": "1.2.276.0.7230010.3.1.2.296485376.1.1521713421.1803140",
+      "dominant_class": "subarachnoid",
+      "subtype_labels": {
+        "subdural": 0,
+        "epidural": 0,
+        "intraparenchymal": 1,
+        "intraventricular": 1,
+        "subarachnoid": 1,
+        "any": 1
+      },
+      "n_slices": 30,
+      "n_labelled": 30,
+      "source": "CQ500",
+      "cq500_name": "CQ500-CT-342",
+      "folder": "positive/subarachnoid__CQ500_CT_342"
+    }
+  ],
+  "negative": [
+    {
+      "study_uid": "1.2.276.0.7230010.3.1.2.296485376.1.1521713277.1770382",
+      "n_slices": 30,
+      "n_labelled": 30,
+      "source": "CQ500",
+      "cq500_name": "CQ500-CT-99",
+      "folder": "negative/negative__CQ500_CT_99"
+    },
+    {
+      "study_uid": "1.2.276.0.7230010.3.1.2.296485376.1.1521713092.1722524",
+      "n_slices": 30,
+      "n_labelled": 30,
+      "source": "CQ500",
+      "cq500_name": "CQ500-CT-47",
+      "folder": "negative/negative__CQ500_CT_47"
+    }
+  ]
+}

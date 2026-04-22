@@ -12,12 +12,11 @@ browser-based radiology worklist.
 
 ---
 
-> **Repository status:** This repository is currently **private** pending
-> permission from the RSNA Educational Division to include the anonymised
-> DICOM CT subset used in the demonstration.  The training dataset
-> (RSNA Intracranial Hemorrhage Detection, Kaggle 2019) is not included
-> and must be downloaded separately.  The trained model checkpoint is hosted
-> on HuggingFace Hub — see [Demo](#demo) for download instructions.
+> The training dataset (RSNA Intracranial Hemorrhage Detection, Kaggle 2019)
+> is not included and must be downloaded separately.  The demonstration CT
+> studies are sourced from the CQ500 dataset (qure.ai, CC-BY-NC-SA 4.0).
+> The trained model checkpoint is hosted on HuggingFace Hub — see
+> [Demo](#demo) for download instructions.
 
 ---
 
@@ -995,16 +994,32 @@ the open-source model library maintained by Ross Wightman.
 | [NumPy](https://numpy.org/) | Array operations throughout |
 | [pandas](https://pandas.pydata.org/) | Label file handling during training |
 
-### Dataset
+### Datasets
 
 **RSNA Intracranial Hemorrhage Detection Challenge (2019)**
 Radiological Society of North America.
 [kaggle.com/c/rsna-intracranial-hemorrhage-detection](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection)
 
-The model was trained and evaluated on this dataset.  The anonymised DICOM
-subset used in the demonstration is pending permission from the RSNA
-Educational Division for redistribution.  The full training dataset is
-available directly from Kaggle and is not included in this repository.
+The model was trained and evaluated on this dataset.  The full training
+dataset is available directly from Kaggle and is not included in this
+repository.
+
+**CQ500 Head CT Dataset — Demo Studies**
+Chilamkurthy, S., Ghosh, R., Tanamala, S., Biviji, M., Campeau, N. G.,
+Venugopal, V. K., Mahajan, V., Rao, P., & Warier, P. (2018).
+Deep learning algorithms for detection of critical findings in head CT scans:
+a retrospective study. *The Lancet*, 392(10162), 2388–2396.
+[doi:10.1016/S0140-6736(18)31645-3](https://doi.org/10.1016/S0140-6736(18)31645-3)
+
+The seven demonstration CT studies included in `demo_studies/` are drawn from
+the CQ500 dataset released by qure.ai under the
+[Creative Commons CC-BY-NC-SA 4.0 licence](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+One study per ICH subtype (intraparenchymal, epidural, intraventricular,
+subdural, subarachnoid) plus two negative controls was selected by majority
+vote across three independent radiologist reads.  Slices were subsampled to 30
+per study for repository size.  Full dataset available at
+[http://headctstudy.qure.ai/dataset](http://headctstudy.qure.ai/dataset)
+and via [Academic Torrents](https://academictorrents.com/details/47e9d8aab761e75fd0a81982fa62bddf3a173831).
 
 ---
 

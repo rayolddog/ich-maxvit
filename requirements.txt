@@ -3,8 +3,10 @@
 # Install with:
 #   pip install -r requirements.txt
 #
-# A CUDA-capable GPU is strongly recommended for inference and training.
-# CPU-only inference is possible but significantly slower.
+# Platform notes:
+#   macOS (Apple Silicon): Uses MPS acceleration, standard torch install works
+#   Linux (CUDA 12.8):     pip install torch --index-url https://download.pytorch.org/whl/cu128
+#   CPU-only:              Works but significantly slower
 
 # ── Deep learning ─────────────────────────────────────────────────────────────
 torch>=2.1.0
@@ -31,3 +33,6 @@ huggingface_hub>=0.20.0   # download_checkpoint.py — fetch checkpoint from HF 
 anthropic>=0.25.0     # optional: only required for run_demo_agent.py
                       # Requires ANTHROPIC_API_KEY environment variable.
                       # See README: Agentic Mode — Anthropic API
+
+# ── CQ500 demo study fetcher ──────────────────────────────────────────────────
+requests>=2.31.0      # fetch_cq500_demo.py — download CQ500 studies from S3
