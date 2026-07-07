@@ -69,6 +69,59 @@ must be copied verbatim (SOPInstanceUIDs, probabilities). Therefore the
 agent owns the *prose layer* and passes *opaque handles* for the data layer;
 inference results are re-loaded server-side, never transcribed by the model.
 
+## The keystone agentic benefit: state-dependent routing (de novo vs. follow-up)
+
+Detection is *stateless* — this image, blood or not. The clinically correct
+next action is *state-dependent*, and the state lives outside the pixels, in
+the chart. This is the one benefit no static pipeline can replicate, because
+it is a branching clinical-reasoning decision, not language handling or
+plumbing:
+
+```
+ICH identified
+  └─ agent queries chart: prior head CT in a short window?
+       ├─ NO  → de novo: characterize, localize, flag acute
+       └─ YES → follow-up: the question is no longer "is there blood?"
+                but "what CHANGED?" → fetch prior, compare:
+                  • hemorrhage size (expansion?)
+                  • attenuation (evolving age of blood: hyperacute→chronic)
+                  • cerebral edema / midline shift (developing or worsening —
+                    the classic short-interval deterioration of subdural)
+                → report is a COMPARISON, not a fresh description
+```
+
+Two claims follow, and they are the strongest in this document:
+
+1. **This is what an orchestrating agent is actually for.** Not doing the
+   steps — deciding *which steps the case calls for*. The de-novo/follow-up
+   branch changes what the entire downstream analysis is *for*, based on
+   external unstructured state. That is the textbook justification for
+   orchestration, and it is the honest answer to "why is this agentic at
+   all?"
+2. **Comparison-over-time is an under-served gap in imaging AI.** Nearly all
+   published ICH models score single exams against a label. But the
+   clinically decisive events in ICH are *deltas* — hematoma expansion,
+   evolving mass effect, the subdural whose midline shift creeps over hours —
+   not presences. An AI that reports "blood present, 0.94" on a follow-up is
+   answering a question nobody asked. The agent's role is to ensure the
+   *right question* is asked of each exam; on follow-ups the right question is
+   almost always the comparison, and current tools skip it. This also
+   completes the trust argument: "did they even look at the prior?" is the
+   most corrosive doubt in follow-up imaging, and an explicitly comparative
+   report answers it directly.
+
+**Honesty boundaries (state these in any demo):**
+- *Chart access is real integration, not mockable with a demo folder.*
+  Retrieving priors + indication means DICOMweb QIDO against a PACS at
+  minimum, ideally FHIR against an EHR (`ImagingStudy`, `Condition`,
+  `Encounter`). The demo can show the agent *making the branch* on staged
+  priors; live EHR/FHIR retrieval is the productionization step.
+- *Registered quantitative comparison is its own pipeline.* "Hematoma grew
+  9 mm" requires co-registering and segmenting both studies. Keep the agent's
+  claim at "identifies that comparison is required and structures the
+  comparative report," not "measures the growth" — until a comparison tool
+  exists to call.
+
 ## The cautionary precedent this design answers
 
 Mammography CAD is the canonical failure of AI-in-workflow: decades of
@@ -84,10 +137,14 @@ specific reason CAD failed.
 2. Open the AI result: a conformant DICOM SR (TID 1500) ingested by a real
    PACS (Orthanc via STOW-RS), with toggleable image overlays (confidence:
    pointed at the images).
-3. Read the two reports side by side: direct-mode checklist vs agent-mode
+3. **The branch:** on a positive case, the agent queries for a prior. Show
+   both paths — a de novo read, and a follow-up where the agent pivots to a
+   comparative report (size/attenuation/midline-shift deltas) against a
+   staged prior. This is the "why agentic" beat.
+4. Read two reports side by side: direct-mode checklist vs agent-mode
    discussion, same deterministic findings underneath (the ablation).
-4. Show the same case's PPV under textbook prior vs. locally measured
+5. Show the same case's PPV under textbook prior vs. locally measured
    prevalence from the archive scanner (honest calibration).
-5. Close on the Bayesian section: what the clinician should actually believe
+6. Close on the Bayesian section: what the clinician should actually believe
    when the flag fires — 74% → 26% and why that is a feature of honesty, not
    a weakness of the model.
