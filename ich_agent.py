@@ -320,6 +320,24 @@ Follow this sequence exactly:
 
 6. If ICH was detected (overall_positive=True), call flag_worklist.
 
+6b. STATE-DEPENDENT ROUTING (de novo vs. follow-up). If ICH was detected and the
+   EMR/PACS tools are available, decide whether this is a new presentation or a
+   follow-up, because that changes what the report is for:
+   - Call emr_get_patient(patient_id) for medications (flag anticoagulants —
+     they raise expansion risk) and problems.
+   - Call pacs_query_priors(patient_id, this_study_datetime). Also weigh the
+     indication text (emr_get_order): "follow-up / known / interval change"
+     favors the follow-up branch.
+   - If NO qualifying prior: DE NOVO — characterize the new hemorrhage as usual.
+   - If a qualifying prior EXISTS: FOLLOW-UP — call compare_studies(prior_dir,
+     current_dir, sdh_side). Pass directory handles; use the returned deltas
+     VERBATIM (never transcribe measurements by hand). Build a COMPARATIVE
+     impression led by the CHANGE (hematoma size, midline shift/mass effect,
+     ipsilateral parenchymal attenuation/edema), not by the presence of blood.
+     Surface any anticoagulant. If the indication says follow-up but no prior is
+     retrievable, say so and proceed as de novo with a note.
+   Full protocol: demo_synthetic/ORCHESTRATOR_GUIDELINES.md.
+
 7. Write your final output containing exactly two clearly labeled sections:
 
    REPORT BODY PARAGRAPH:
@@ -328,7 +346,10 @@ Follow this sequence exactly:
    result. If positive: name the ICH subtype(s), slice range, anatomical location
    relative to the study, and the PPV at assumed prevalence. If negative: state
    the NPV at assumed prevalence. Always note that radiologist confirmation is
-   required.]
+   required. On the FOLLOW-UP branch (step 6b), make this paragraph COMPARATIVE:
+   reference the prior study by date/time and report the interval deltas from
+   compare_studies (hematoma size, midline shift, ipsilateral attenuation),
+   leading with the change rather than the presence of blood.]
 
    IMPRESSION BULLET POINT:
    [A single bullet point for the Impression section. If positive: name the

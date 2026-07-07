@@ -1,0 +1,42 @@
+{
+  "DEMO-0001": {
+    "patient_id": "DEMO-0001",
+    "name": "DEMO, Subdural",
+    "birth_date": "1951-03-12",
+    "sex": "M",
+    "problem_list": [
+      "Atrial fibrillation",
+      "Hypertension"
+    ],
+    "medications": [
+      {
+        "name": "apixaban",
+        "class": "DOAC (anticoagulant)",
+        "note": "raises hemorrhage risk and expansion risk"
+      },
+      {
+        "name": "lisinopril",
+        "class": "ACE inhibitor"
+      }
+    ],
+    "allergies": [
+      "none known"
+    ],
+    "encounters": [
+      {
+        "date": "2024-01-15",
+        "time": "08:10",
+        "type": "ED",
+        "chief_complaint": "Fall at home, struck head; on blood thinner",
+        "accession": "DEMOACC001"
+      },
+      {
+        "date": "2024-01-15",
+        "time": "20:00",
+        "type": "ED observation",
+        "chief_complaint": "Decreased responsiveness, new confusion",
+        "accession": "DEMOACC002"
+      }
+    ]
+  }
+}

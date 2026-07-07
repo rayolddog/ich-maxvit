@@ -1,0 +1,24 @@
+[
+  {
+    "study_uid": "1.2.826.0.1.3680043.10.9999.1.1",
+    "patient_id": "DEMO-0001",
+    "accession": "DEMOACC001",
+    "study_date": "20240115",
+    "study_time": "083000",
+    "modality": "CT",
+    "description": "CT HEAD WO CONTRAST",
+    "series_dir": "/Users/john-bramble/ich-maxvit/demo_synthetic/pacs/baseline",
+    "n_instances": 4
+  },
+  {
+    "study_uid": "1.2.826.0.1.3680043.10.9999.2.1",
+    "patient_id": "DEMO-0001",
+    "accession": "DEMOACC002",
+    "study_date": "20240115",
+    "study_time": "201500",
+    "modality": "CT",
+    "description": "CT HEAD WO CONTRAST",
+    "series_dir": "/Users/john-bramble/ich-maxvit/demo_synthetic/pacs/followup",
+    "n_instances": 4
+  }
+]
