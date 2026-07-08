@@ -250,22 +250,31 @@ reduces cost roughly 5× while still producing high-quality reports.
 MaxViT-Base trained from random weights on the RSNA ICH dataset.
 Evaluated on the **held-out test set (200,000 slices, never seen during training)**.
 
-| Class | Prevalence | AUC | Sensitivity | Specificity | LR+ | LR− | PPV* | NPV* |
-|---|---|---|---|---|---|---|---|---|
-| Epidural | 0.42% | 0.985 | 0.939 | 0.944 | 16.76 | 0.065 | 11.8% | 99.97% |
-| Intraparenchymal | 4.85% | 0.989 | 0.944 | 0.944 | 16.93 | 0.059 | 46.3% | 99.7% |
-| Intraventricular | 3.52% | 0.988 | 0.940 | 0.941 | 15.91 | 0.064 | 37.0% | 99.8% |
-| Subarachnoid | 4.79% | 0.983 | 0.946 | 0.941 | 16.07 | 0.057 | 45.1% | 99.7% |
-| Subdural | 6.33% | 0.984 | 0.934 | 0.944 | 16.66 | 0.070 | 53.1% | 99.5% |
-| **Any ICH** | **14.49%** | **0.986** | **0.940** | **0.945** | **17.18** | **0.064** | **74.0%** | **99.1%** |
+*All values below are reproduced verbatim from the single canonical metrics
+artifact, `checkpoints_maxvit/test_metrics.json` — the same file the DICOM SR
+and worklist load. There is no second, disagreeing metric source.*
+
+| Class | Prevalence | AUC | Sensitivity | Specificity | LR+ | LR− | PPV* | NPV* | Threshold† |
+|---|---|---|---|---|---|---|---|---|---|
+| Epidural | 0.42% | 0.989 | 0.956 | 0.949 | 18.93 | 0.046 | 7.4% | 99.98% | 0.097 |
+| Intraparenchymal | 4.85% | 0.989 | 0.949 | 0.953 | 20.21 | 0.053 | 50.7% | 99.73% | 0.271 |
+| Intraventricular | 3.52% | 0.993 | 0.962 | 0.968 | 29.69 | 0.039 | 52.0% | 99.86% | 0.250 |
+| Subarachnoid | 4.79% | 0.979 | 0.919 | 0.931 | 13.24 | 0.087 | 40.0% | 99.57% | 0.307 |
+| Subdural | 6.33% | 0.984 | 0.933 | 0.948 | 17.81 | 0.071 | 54.6% | 99.52% | 0.416 |
+| **Any ICH** | **14.49%** | **0.986** | **0.940** | **0.945** | **17.18** | **0.063** | **74.4%** | **98.94%** | **0.346** |
 
 \* PPV and NPV computed at the test-set prevalence shown.  These values
 change with the local prevalence of the imaging population — the DICOM SR
-and worklist viewer recalculate them dynamically.
+and worklist viewer recalculate them dynamically (see the Bayesian section).
 
-Thresholds chosen by Youden J (maximising sensitivity + specificity — a
-clinically sensible operating point for a screening test where missed ICH
-is far more costly than a false alarm).
+† **Per-class operating threshold (Youden J**, maximising sensitivity +
+specificity — a clinically sensible point for a screening test where missed
+ICH is far more costly than a false alarm). *The inference pipeline calls
+positives at exactly these thresholds*, so the sensitivity / specificity / PPV
+above describe the operating point the model actually uses. (A prior version
+called positives at a flat 0.5 while reporting these Youden-threshold metrics —
+a mismatch that understated sensitivity, most severely for epidural, whose
+threshold is 0.097.)
 
 ---
 
@@ -712,7 +721,15 @@ Experiment code: [`compare_normalization.py`](compare_normalization.py)
 
 ---
 
-## ICH Classification Results
+## Appendix: earlier SE-ResNeXt50 baseline (superseded — not the deployed model)
+
+> **These are NOT the deployed model's numbers.** The figures below are an
+> earlier, smaller baseline (SE-ResNeXt50, mean AUC 0.960) retained to document
+> the training journey and to show that the calibrated encoding carries signal
+> even for a from-scratch CNN. The **deployed** model is MaxViT-Base (mean AUC
+> 0.986); its canonical metrics are in [Model Performance](#model-performance)
+> above and in `checkpoints_maxvit/test_metrics.json`. Do not cite the table
+> below as the pipeline's performance.
 
 To validate that the calibrated encoding provides actionable signal for deep
 learning, a SE-ResNeXt50 classifier was trained from **random weights** (no

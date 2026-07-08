@@ -34,11 +34,36 @@ from dataset_1ch import LABEL_COLS
 
 TARGET_SIZE       = 224
 BATCH_SIZE        = 32        # slices per forward pass
-POSITIVE_THRESH   = 0.5       # probability threshold for positive call
+POSITIVE_THRESH   = 0.5       # fallback only; per-class Youden thresholds are used
 DEFAULT_CKPT      = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     "checkpoints_maxvit", "best_maxvit_ich.pth"
 )
+METRICS_PATH      = os.path.join(os.path.dirname(DEFAULT_CKPT), "test_metrics.json")
+
+
+def load_class_thresholds(metrics_path=METRICS_PATH):
+    """Per-class operating thresholds (Youden J) from the test-metrics artifact,
+    so the positive CALL is made at the SAME operating point the reported
+    sensitivity / specificity / PPV / NPV describe. Prior code called positives
+    at a flat 0.5 while reporting Youden-threshold metrics — a mismatch that
+    understated sensitivity (epidural threshold is 0.097, not 0.5). Falls back to
+    POSITIVE_THRESH for any class missing from the artifact."""
+    import json
+    try:
+        with open(metrics_path) as f:
+            per = json.load(f)["per_class"]
+        return {c: float(v.get("threshold", POSITIVE_THRESH))
+                for c, v in per.items()}
+    except Exception:
+        return {}
+
+
+CLASS_THRESHOLDS = load_class_thresholds()
+
+
+def _threshold(col):
+    return CLASS_THRESHOLDS.get(col, POSITIVE_THRESH)
 
 # Human-readable class names matching LABEL_COLS order
 CLASS_DISPLAY = {
@@ -249,9 +274,10 @@ def run_inference(
     for i, col in enumerate(LABEL_COLS):
         prob = float(study_max[i])
         study_level[col] = {
-            "prob":     round(prob, 4),
-            "positive": prob >= POSITIVE_THRESH,
-            "display":  CLASS_DISPLAY.get(col, col),
+            "prob":      round(prob, 4),
+            "positive":  prob >= _threshold(col),
+            "threshold": round(_threshold(col), 4),
+            "display":   CLASS_DISPLAY.get(col, col),
         }
 
     # ── Hot slices (top activations per class, deduplicated) ─────────────────
@@ -264,7 +290,7 @@ def run_inference(
         top_indices = np.argsort(all_probs[:, i])[::-1][:3]
         for idx in top_indices:
             prob = float(all_probs[idx, i])
-            if prob < POSITIVE_THRESH:
+            if prob < _threshold(col):
                 break
             if idx not in hot_slice_set or prob > hot_slice_set[idx]["prob"]:
                 hot_slice_set[idx] = {

@@ -297,7 +297,7 @@ TOOLS = [
 
 SYSTEM_PROMPT = """You are an AI radiology pipeline agent. Your task is to \
 process a CT head study and screen it for intracranial hemorrhage (ICH) using \
-a trained MaxViT classifier (mean AUC 0.988, trained on the RSNA ICH dataset).
+a trained MaxViT classifier (mean AUC 0.986, trained on the RSNA ICH dataset).
 
 Follow this sequence exactly:
 
