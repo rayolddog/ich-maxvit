@@ -5,8 +5,9 @@ Evaluate the MaxViT ICH classifier on the held-out test set.
 Computes per-class metrics at the Youden-optimal threshold:
   AUC, prevalence, sensitivity, specificity, PPV, NPV, LR+, LR-
 
-Results are saved to checkpoints_maxvit/test_metrics.json and used by
-ich_dicom_sr.py instead of hardcoded performance constants.
+Results are saved to checkpoints_maxvit/test_metrics.json — the single canonical
+metrics source read by ich_metrics.py (report PPV/NPV), ich_inference.py
+(per-class operating thresholds), and the README performance table.
 
 Usage:
     python evaluate_maxvit_test.py

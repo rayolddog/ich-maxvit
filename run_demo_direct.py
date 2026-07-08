@@ -27,10 +27,13 @@ warnings.filterwarnings("ignore", category=UserWarning)
 from ich_agent import (
     _scan_study,
     _run_ich_inference,
-    _generate_dicom_sr,
     _flag_worklist,
     CHECKPOINT_PATH,
 )
+import ich_metrics
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).parent / "demo_synthetic"))
+from conformant_sr import build_sr as _build_conformant_sr
 
 try:
     from ich_worklist import record_result as _worklist_record
@@ -255,18 +258,18 @@ def process_study(entry: dict, demo_dir: Path, verbose: bool) -> str:
               f"(any prob={sl.get('any',{}).get('prob',0)*100:.0f}%, "
               f"dominant={dom_class_raw or 'none'})", flush=True)
 
-    # ── 5. Generate DICOM SR ───────────────────────────────────────────────────
-    study_metadata = {
-        "study_uid":  study_uid,
-        "patient_id": study_uid,
-        "indication": indication,
-    }
-    output_path = str(folder / "ich_ai_sr.json")
+    # ── 5. Generate conformant DICOM SR (TID 1500) + clinical metrics ──────────
     if verbose:
-        print("  [4/5] Generating DICOM SR...", flush=True)
-    sr_result = _generate_dicom_sr(inference, study_metadata, output_path, prevalence)
-    sr_path  = sr_result.get("output_path", "")
-    metrics  = sr_result.get("metrics", {})
+        print("  [4/5] Generating conformant DICOM SR (TID 1500)...", flush=True)
+    # Direct (non-agentic) path: no LLM in the loop, so the real inference dict is
+    # passed straight to the conformant SR builder (the handle indirection exists
+    # only to keep the agentic path from transcribing values through the model).
+    sr_path = _build_conformant_sr(series_folder, str(folder), inference=inference)
+    # Metrics for the report come from the single canonical source (ich_metrics),
+    # at the assumed prevalence, for the dominant finding (or 'any' if negative).
+    metrics_class = (ich_metrics.dominant_positive_class(
+        inference.get("study_level", {})) if ai_positive else "any")
+    metrics = ich_metrics.metrics_for(metrics_class, prevalence)
 
     # ── 6. Generate report text ────────────────────────────────────────────────
     paragraph, bullet = _generate_report(

@@ -814,7 +814,7 @@ NewICH/
 ├── demo_studies/              # Built by build_demo_studies.py
 │   ├── manifest.json
 │   ├── positive/
-│   │   ├── subdural__<uid>/      *.dcm + ich_ai_sr.json
+│   │   ├── subdural__<uid>/      *.dcm + ich_ai_sr.dcm
 │   │   ├── epidural__<uid>/
 │   │   ├── intraparenchymal__<uid>/
 │   │   ├── intraventricular__<uid>/
