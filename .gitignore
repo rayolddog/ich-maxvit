@@ -57,3 +57,8 @@ preview_pseudocolor_detail.py
 .DS_Store
 .idea/
 .claude/
+
+# generated AI artifacts (regenerable)
+_ich_inference.json
+ich_ai_sr.dcm
+demo_synthetic/out_real/

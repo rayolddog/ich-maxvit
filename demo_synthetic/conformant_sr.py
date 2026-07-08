@@ -44,8 +44,8 @@ UNIT_NONE = hd.sr.CodedConcept("1", "UCUM", "no units")
 
 
 def demo_inference():
-    """A plausible inference result for the synthetic follow-up subdural case
-    (in production this comes from the classifier; here it's fixed for the demo)."""
+    """Fixed result for the SYNTHETIC phantom, where the real classifier is not
+    meaningful. Real cases use load_inference / run_inference below."""
     return {
         "overall_positive": True,
         "dominant_class": "subdural",
@@ -57,7 +57,26 @@ def demo_inference():
             "intraparenchymal": {"prob": 0.04, "positive": False},
             "intraventricular": {"prob": 0.02, "positive": False},
         },
+        "hot_slices": [],
     }
+
+
+def load_inference(path):
+    """Server-side re-load of a real inference result (JSON from ich_inference).
+    Complementarity rule: the agent passes this PATH (an opaque handle); the SR
+    is built from the real values re-loaded here, never from LLM-transcribed
+    probabilities or SOP UIDs."""
+    import json
+    with open(path) as f:
+        return json.load(f)
+
+
+def run_inference(study_dir, checkpoint=None):
+    """Run the real MaxViT classifier on a DICOM series; returns its result dict."""
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+    from ich_inference import run_inference as _run, DEFAULT_CKPT
+    return _run(study_dir, checkpoint or DEFAULT_CKPT, verbose=False)
 
 
 def _add_coding_scheme_identification(ds):
@@ -79,12 +98,14 @@ def _add_coding_scheme_identification(ds):
     ds.CodingSchemeIdentificationSequence = seq
 
 
-def build_sr(study_dir, out_dir):
+def build_sr(study_dir, out_dir, inference=None):
+    """inference: a real result dict (run_inference/load_inference). If None,
+    falls back to the phantom demo result."""
     files = sorted(glob.glob(os.path.join(study_dir, "*.dcm")))
     if not files:
         raise SystemExit(f"no DICOM in {study_dir}")
     src = [dcmread(f) for f in files]
-    inf = demo_inference()
+    inf = inference if inference is not None else demo_inference()
 
     # observer = the AI algorithm (device observer context)
     device = hd.sr.ObserverContext(
@@ -150,8 +171,12 @@ def build_sr(study_dir, out_dir):
     print(f"[conformant_sr] wrote valid TID 1500 SR -> {path}")
     print(f"    references {len(src)} source CT instances of study "
           f"{src[0].StudyInstanceUID}")
-    print(f"    finding: {inf['dominant_class']} "
-          f"(p={inf['study_level'][inf['dominant_class']]['prob']})")
+    pos = [(c, v["prob"]) for c, v in inf["study_level"].items()
+           if c != "any" and v.get("positive")]
+    verdict = ("POSITIVE: " + ", ".join(f"{c} p={p}" for c, p in sorted(
+        pos, key=lambda x: -x[1]))) if inf.get("overall_positive") \
+        else f"NEGATIVE (any p={inf['study_level']['any']['prob']})"
+    print(f"    real finding: {verdict}")
     return path
 
 
@@ -160,8 +185,19 @@ def main():
     here = os.path.dirname(__file__)
     ap.add_argument("--study", default=os.path.join(here, "pacs", "followup"))
     ap.add_argument("--out", default=os.path.join(here, "out"))
+    ap.add_argument("--run", action="store_true",
+                    help="run the real MaxViT classifier on --study")
+    ap.add_argument("--inference-json",
+                    help="build from a saved ich_inference result (server-side handle)")
     a = ap.parse_args()
-    build_sr(a.study, a.out)
+    if a.inference_json:
+        inf = load_inference(a.inference_json)
+    elif a.run:
+        print(f"[conformant_sr] running MaxViT on {a.study} ...")
+        inf = run_inference(a.study)
+    else:
+        inf = None                                  # phantom fallback
+    build_sr(a.study, a.out, inference=inf)
 
 
 if __name__ == "__main__":

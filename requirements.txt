@@ -21,6 +21,15 @@ scipy>=1.11.0
 
 # ── DICOM ─────────────────────────────────────────────────────────────────────
 pydicom>=2.4.0
+pylibjpeg>=2.0.0            # decode JPEG-Lossless CQ500 studies (transfer syntax .70)
+pylibjpeg-libjpeg>=2.1.0
+pylibjpeg-openjpeg>=2.0.0   # JPEG-2000 (.90) studies
+highdicom>=0.22.0          # conformant TID 1500 SR (demo_synthetic/conformant_sr.py)
+SimpleITK>=2.3.0           # geometry-preserving series read + GDCM decode (annotation_assist)
+
+# ── PACS ingestion demo ───────────────────────────────────────────────────────
+pynetdicom>=2.0.0          # Docker-free C-STORE demo (demo_synthetic/pacs_ingest_demo.py)
+dicomweb-client>=0.59.0    # STOW-RS into Orthanc (demo_synthetic/orthanc_stow.py)
 
 # ── Worklist server and image serving ────────────────────────────────────────
 flask>=3.0.0

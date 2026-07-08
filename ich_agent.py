@@ -86,33 +86,45 @@ def _scan_study(study_folder: str) -> dict:
 def _run_ich_inference(series_folder: str, checkpoint_path: str) -> dict:
     """
     Run MaxViT ICH inference on a DICOM series folder.
-    Delegates to ich_inference.run_inference().
+    Saves the FULL result to a JSON file server-side and returns a summary plus
+    the file path (an opaque HANDLE). The agent reasons from the summary and
+    passes the handle to generate_dicom_sr — it never transcribes the
+    probabilities or SOP UIDs itself (complementarity rule).
     """
+    import json
     from ich_inference import run_inference
     result = run_inference(
         series_folder   = series_folder,
         checkpoint_path = checkpoint_path,
         verbose         = True,
     )
-    # Drop per_slice_probs from agent context — too large for message history
-    result.pop("per_slice_probs", None)
+    handle = str(Path(series_folder) / "_ich_inference.json")
+    with open(handle, "w") as f:
+        json.dump(result, f)                     # full result incl. per-slice
+    result.pop("per_slice_probs", None)          # too large for agent context
+    result["inference_result_path"] = handle     # <- the handle
     return result
 
 
 def _generate_dicom_sr(
-    inference_results: dict,
-    study_metadata:    dict,
-    output_path:       str,
-    prevalence:        float = 0.02,
+    inference_result_path: str,
+    output_path:           str,
+    study_metadata:        dict = None,
+    prevalence:            float = 0.02,
 ) -> dict:
-    """Generate a DICOM Comprehensive SR. Delegates to ich_dicom_sr.generate_sr()."""
-    from ich_dicom_sr import generate_sr
-    return generate_sr(
-        inference_results = inference_results,
-        study_metadata    = study_metadata,
-        output_path       = output_path,
-        prevalence        = prevalence,
-    )
+    """Build a conformant TID 1500 SR. Re-loads the REAL inference result from
+    the handle server-side (never from LLM-supplied numbers) and derives study/
+    patient identity from the referenced source images. Delegates to
+    demo_synthetic/conformant_sr.build_sr()."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent / "demo_synthetic"))
+    from conformant_sr import build_sr, load_inference
+    inf = load_inference(inference_result_path)
+    study_dir = inf["series_folder"]
+    out_dir = os.path.dirname(output_path) or "."
+    path = build_sr(study_dir, out_dir, inference=inf)
+    return {"sr_path": path, "conformant": True, "template": "TID 1500",
+            "sop_class": "Comprehensive SR", "built_from": inference_result_path}
 
 
 def _flag_worklist(
@@ -156,9 +168,9 @@ TOOL_IMPLEMENTATIONS = {
         a.get("checkpoint_path", CHECKPOINT_PATH),
     ),
     "generate_dicom_sr": lambda a: _generate_dicom_sr(
-        a["inference_results"],
-        a["study_metadata"],
+        a["inference_result_path"],
         a["output_path"],
+        a.get("study_metadata"),
         a.get("prevalence", 0.02),
     ),
     "flag_worklist": lambda a: _flag_worklist(
@@ -219,37 +231,35 @@ TOOLS = [
     {
         "name": "generate_dicom_sr",
         "description": (
-            "Generate a DICOM Structured Report encoding the AI findings. "
-            "The SR includes: AI method, per-class probabilities, PPV and NPV "
-            "at the assumed prevalence, a confusion matrix (TP/FP/TN/FN at 1000 "
-            "cases), the pain index (FP:TP ratio), and references to hot slices. "
-            "The SR is written as a separate file alongside the study images."
+            "Build a conformant TID 1500 DICOM Structured Report of the AI "
+            "findings and write it as a real .dcm (Comprehensive SR). Pass the "
+            "inference_result_path HANDLE returned by run_ich_inference — the SR "
+            "is built server-side from the real probabilities and source-image "
+            "references re-loaded from that file. Do NOT paste probabilities or "
+            "SOP UIDs into this call; only the handle. Study/patient identity is "
+            "taken from the referenced source images."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
-                "inference_results": {
-                    "type":        "object",
-                    "description": "The full results dict returned by run_ich_inference.",
-                },
-                "study_metadata": {
-                    "type":        "object",
-                    "description": "Study-level metadata: study_uid, patient_id, indication.",
+                "inference_result_path": {
+                    "type":        "string",
+                    "description": "The inference_result_path handle from run_ich_inference.",
                 },
                 "output_path": {
                     "type":        "string",
-                    "description": "Full file path where the SR should be written.",
+                    "description": "Directory (or file path) where the SR .dcm is written.",
                 },
                 "prevalence": {
                     "type":        "number",
                     "description": (
-                        "Assumed disease prevalence (0.0–1.0) for PPV/NPV and confusion "
-                        "matrix. Guidelines: headache/no trauma ~0.02, altered mental "
+                        "Assumed prevalence (0.0–1.0) for the report narrative. "
+                        "Guidelines: headache/no trauma ~0.02, altered mental "
                         "status ~0.08, ER trauma ~0.10, post-op craniotomy ~0.20."
                     ),
                 },
             },
-            "required": ["inference_results", "study_metadata", "output_path"],
+            "required": ["inference_result_path", "output_path"],
         },
     },
     {
@@ -314,9 +324,10 @@ Follow this sequence exactly:
    - Post-op craniotomy: 0.20
    - Unknown/not provided: 0.05
 
-5. Call generate_dicom_sr with the inference results, study metadata (study_uid,
-   patient_id, indication), the output path, and the assumed prevalence.
-   Output path: same directory as the study folder, filename: ich_ai_sr.json
+5. Call generate_dicom_sr with the inference_result_path HANDLE from step 3
+   (NOT the probabilities themselves) and the output path. The conformant
+   TID 1500 SR is built server-side from the real values re-loaded from the
+   handle. Output path: the study folder (the SR .dcm is written there).
 
 6. If ICH was detected (overall_positive=True), call flag_worklist.
 
